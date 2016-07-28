@@ -10,6 +10,12 @@ class Entry:
             self._antonyms.add(str(x))
         self._categories = {str(x) for x in categories}
 
+    def __str__(self):
+        return self._term
+
+    def __repr__(self):
+        return "Entry(%r, %r, %r, %r)" % (self._term, self._categories, self._antonyms, self._synonyms)
+
 
 class Dictionary:
     def __init__(self):
@@ -25,6 +31,13 @@ class Dictionary:
         self.add('up', 'direction', 'down')
         self.add('left', 'direction', 'right')
         self.add('forward', 'direction', 'backward')
+
+        self.add('go', 'command')
+        a = {e for e in self._terms.values() if e._primary_antonym is not None}
+        for t in a:
+            x = t._antonyms
+            x.discard(t._primary_antonym)
+            self.add(t._primary_antonym, t._categories, t._synonyms, x)
 
     def add(self, term, categories=[], antonyms=[], synonyms=[]):
         """
@@ -43,26 +56,32 @@ class Dictionary:
         e = Entry(term, categories, antonyms, synonyms)
         self._terms[term] = e
 
-    def lookup(self, term):  # TODO: optimize
+    def lookup(self, term, expected_category=None):  # TODO: optimize
         """
 
         :param term:
         :return:
         """
         term = str(term)  # make sure it is a string
+        if expected_category is not None:
+            expected_category = str(expected_category)
         if term in self._terms:  # first, find primary terms
-            return self._terms[term]
+            if expected_category is None or expected_category in self._terms[term]._categories:
+                return self._terms[term]
         for e in self._terms.values():  # then look at synonyms
             if term in e._synonyms:
-                return e
+                if expected_category is None or expected_category in e._categories:
+                    return e
         # now, see if it is an abbreviation of a term
         for t in self._terms:
             if t.startswith(term):
-                return self._terms[t]
+                if expected_category is None or expected_category in self._terms[t]._categories:
+                    return self._terms[t]
         # and...the same for synonyms
         for e in self._terms.values():
             for t in e._synonyms:
                 if t.startswith(term):
-                    return e
+                    if expected_category is None or expected_category in e._categories:
+                        return e
         # not found
         return None

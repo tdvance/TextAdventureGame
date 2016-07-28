@@ -2,6 +2,7 @@ from player import Player
 from room import Room
 from dictionary import Dictionary
 
+
 class Game:
     def __init__(self):
         self._dictionary = Dictionary()
@@ -23,7 +24,6 @@ class Game:
         self.setup_items()
         self.setup_objects()
         self._player.restart()
-
 
     def setup_rooms(self):
         """
@@ -59,7 +59,30 @@ class Game:
             if room.far_description is not None:
                 print("%s is %s" % (direction, room.far_description))
 
+    def read_command(self):
+        l = input("> ").split()
+        return [ self._dictionary.lookup(x) for x in l]
+
+    def tick(self):
+        self.print_state()
+        cmd = self.read_command()
+        if cmd:
+            self.exec(cmd)
+
+    def exec(self, cmd):
+        if str(cmd[0]) == 'go':
+            if len(cmd)==1:
+                print("Go where?")
+            elif len(cmd) > 2 or cmd[1] is None:
+                print("I don't understand.")
+            elif 'direction' not in cmd[1]._categories:
+                print("%s is not a direction" % str(cmd[1]))
+            else:
+                self.player.go(str(cmd[1]))
+
+
+
 if __name__ == '__main__':
     game = Game()
-    game.restart_game()
-    game.print_state()
+    for i in range(5):
+        game.tick()

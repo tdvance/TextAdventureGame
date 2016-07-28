@@ -1,5 +1,6 @@
 from globals import reverse_directions
 
+
 class Room:
     _registry = dict()
 
@@ -48,6 +49,7 @@ class Room:
 
     def connections(self):
         return self._connects_to
+
 
 if __name__ == '__main__':
     x = Room("ARoom")

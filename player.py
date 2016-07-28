@@ -50,5 +50,6 @@ class Player:
         """
         pass
 
-    def go(self, direction):
-        room = self.room._connects_to[direction]
+    def go(self, direction):#TODO handle directions that do not go anywhere
+        self._room = self.room._connects_to[direction]
+
