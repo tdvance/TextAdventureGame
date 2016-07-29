@@ -1,7 +1,7 @@
 from noun import Noun
 
 
-class Room(Noun):
+class Item(Noun):
     def __init__(self, name, desc=None, brief_desc=None):
         Noun.__init__(self, self.__class__, name, desc, brief_desc)
 
@@ -26,20 +26,8 @@ class Room(Noun):
     def __delitem__(self, item):
         pass
 
-    def get_room(self, direction):
+    def spawn(self, prepostion, where):
         pass
 
-    def has_room(self, direction):
-        pass
-
-    def num_rooms(self):
-        pass
-
-    def iter_rooms(self):
-        pass
-
-    def add_room(self, direction, room):
-        pass
-
-    def remove_room(self, direction):
+    def kill(self):
         pass

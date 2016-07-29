@@ -1,88 +1,66 @@
-from player import Player
-from room import Room
+from action import Action
+from actor import Actor
 from dictionary import Dictionary
+from direction import Direction
+from enemy import Enemy
+from game_object import GameObject
+from item import Item
+from noun import Noun
+from player import Player
+from preposition import Preposition
+from room import Room
 
 
-class Game:
-    def __init__(self):
-        self._dictionary = Dictionary()
-        initial_room = self.setup_rooms()
-        self._player = Player(initial_room)
-        self.setup_items()
-        self.setup_objects()
+class Game(Noun):
+    def __init__(self, game='Game', desc=None, brief_desc=None):
+        Noun.__init__(self, self.__class__, game, desc, brief_desc)
 
     @property
     def player(self):
-        return self._player
-
-    def restart_game(self):
-        """
-
-        :param self:
-        """
-        self.setup_rooms()
-        self.setup_items()
-        self.setup_objects()
-        self._player.restart()
-
-    def setup_rooms(self):
-        """
-
-        :return:
-        """
-        r1 = Room('rooftop', 'You are on top of a roof')
-        r2 = Room('street', 'You are on a street', 'a street')
-        r3 = Room('apartment', 'You are in an apartment', 'an apartment')
-        r4 = Room('theater', 'You are outside a theater', 'a theater')
-
-        r1.connect('street', 'down')
-        r2.connect_two_way('apartment', 'up')
-        r2.connect_two_way('theater', 'south')
-
-        return 'rooftop'
-
-    def setup_items(self):
-        """
-
-        """
         pass
 
-    def setup_objects(self):
-        """
-
-        """
+    @property
+    def dictionary(self):
         pass
 
-    def print_state(self):
-        print(self.player.room.description)
-        for direction, room in self.player.room.connections().items():
-            if room.far_description is not None:
-                print("%s is %s" % (direction, room.far_description))
+    def __getitem__(self, item):
+        pass
 
-    def read_command(self):
-        l = input("> ").split()
-        return [ self._dictionary.lookup(x) for x in l]
+    def __contains__(self, item):
+        pass
 
-    def tick(self):
-        self.print_state()
-        cmd = self.read_command()
-        if cmd:
-            self.exec(cmd)
+    def __len__(self):
+        pass
 
-    def exec(self, cmd):
-        if str(cmd[0]) == 'go':
-            if len(cmd)==1:
-                print("Go where?")
-            elif len(cmd) > 2 or cmd[1] is None:
-                print("I don't understand.")
-            elif 'direction' not in cmd[1]._categories:
-                print("%s is not a direction" % str(cmd[1]))
-            else:
-                self.player.go(str(cmd[1]))
+    def __iter__(self):
+        pass
 
+    def add_item(self, item):
+        pass
+
+    def __delitem__(self, item):
+        pass
+
+    def get_room(self, room):
+        pass
+
+    def has_room(self, room):
+        pass
+
+    def num_rooms(self):
+        pass
+
+    def iter_rooms(self):
+        pass
+
+    def add_room(self, room):
+        pass
+
+    def remove_room(self, room):
+        pass
 
 
 if __name__ == '__main__':
+    print("Running main.")
     game = Game()
-    for i in range(5):
-        game.tick()
+    print("Game(%s) = %r " % (game, game))
