@@ -1,26 +1,34 @@
 class GameObject:
+    pass
+
+
+import registry
+
+
+class GameObject:
     """
     A GameObject has a name, which should be unique for its class.  It has optional
     long and short descriptions.  The string value of a GameObject is just its name.  Usually
     accessed via subclasses rather than directly.
     """
 
-    _registry = {}
+    _registry = registry.Registry()
 
     @classmethod
-    def get(cls, obj):
-        if isinstance(obj, str):
-            return cls._registry[obj]
-        if isinstance(obj, GameObject):
-            return obj
-        return cls._registry[str(obj)]
+    def get(cls, obj, objcls=None):
+        if objcls is None:
+            if isinstance(obj, GameObject):
+                objcls = type(obj)
+            else:
+                objcls = cls
+        return cls._registry.get(obj, objcls)
 
     def __init__(self, cls, name, desc=None, brief_desc=None):
         self._name = str(name)
         self._cls = cls
-        if (self._name, self._cls) in GameObject._registry: \
-                raise Exception("Name %r already exists for Class %r" % (name, cls))
-        GameObject._registry[(self._name, self._cls)] = self
+        if GameObject._registry.get(self._name, self._cls):
+            raise Exception("Name %r already exists for Class %r" % (name, cls))
+        GameObject._registry.add(self)
         if desc is None:
             self._desc = name
         else:

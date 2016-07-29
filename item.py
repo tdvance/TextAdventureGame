@@ -1,4 +1,6 @@
 from noun import Noun
+from game_object import GameObject
+from preposition import Preposition
 
 
 class Item(Noun):
@@ -9,6 +11,9 @@ class Item(Noun):
 
     def __init__(self, name, desc=None, brief_desc=None):
         Noun.__init__(self, self.__class__, name, desc, brief_desc)
+        self._items = set()
+        self._contained_in = None
+        self._preposition = None
 
     def __getitem__(self, item):
         pass
@@ -32,7 +37,13 @@ class Item(Noun):
         pass
 
     def spawn(self, prepostion, where):
+        self._contained_in = GameObject.get(where, [Room, Player, Enemy, Item, Actor])
+        self._preposition = GameObject.get(prepostion, [Preposition])
+        self._contained_in.add_item(self, self._preposition)
         pass
 
     def delete(self):
+        del self._contained_in[self]
+        self._contained_in = None
+        self._preposition = None
         pass

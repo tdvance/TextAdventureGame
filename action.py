@@ -16,13 +16,13 @@ class Action(GameObject):
         self._object = None
         self._indirect_objects = set()  # set of (Preposition, Noun)
 
-    def set_object(self, item):
+    def set_direct_object(self, item):
         self._object = GameObject.get(item)
 
-    def get_object(self):
+    def get_direct_object(self):
         return self._object
 
-    def has_object(self):
+    def has_direct_object(self):
         return self._object is not None
 
     def get_indirect_object(self, item):
