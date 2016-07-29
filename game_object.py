@@ -1,10 +1,19 @@
 class GameObject:
     """
     A GameObject has a name, which should be unique for its class.  It has optional
-    long and short descriptions.  The string value of a GameObject is just its name.
+    long and short descriptions.  The string value of a GameObject is just its name.  Usually
+    accessed via subclasses rather than directly.
     """
 
     _registry = {}
+
+    @classmethod
+    def get(cls, obj):
+        if isinstance(obj, str):
+            return cls._registry[obj]
+        if isinstance(obj, GameObject):
+            return obj
+        return cls._registry[str(obj)]
 
     def __init__(self, cls, name, desc=None, brief_desc=None):
         self._name = str(name)
