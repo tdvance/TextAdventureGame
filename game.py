@@ -12,6 +12,9 @@ from room import Room
 
 
 class Game(Noun):
+    """
+    The main game, managing the game loop, containers for various game elements, etc.
+    """
     def __init__(self, game='Game', desc=None, brief_desc=None):
         Noun.__init__(self, self.__class__, game, desc, brief_desc)
 

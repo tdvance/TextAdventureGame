@@ -2,6 +2,10 @@ from noun import Noun
 
 
 class Room(Noun):
+    """
+    A room is a noun that can contain (via a preposition) items or be connected to other rooms via a direction.
+    """
+
     def __init__(self, name, desc=None, brief_desc=None):
         Noun.__init__(self, self.__class__, name, desc, brief_desc)
 

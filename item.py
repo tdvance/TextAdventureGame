@@ -2,6 +2,11 @@ from noun import Noun
 
 
 class Item(Noun):
+    """
+    An item is a noun than can be spawned or deleted (not the same as killed, which means setting health to 0),
+    and can contain or be contained in other items (via a preposition)
+    """
+
     def __init__(self, name, desc=None, brief_desc=None):
         Noun.__init__(self, self.__class__, name, desc, brief_desc)
 
@@ -29,5 +34,5 @@ class Item(Noun):
     def spawn(self, prepostion, where):
         pass
 
-    def kill(self):
+    def delete(self):
         pass
