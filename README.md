@@ -3,8 +3,8 @@
 An experimental framework for text adventure games using Python (ultimately: Unity 5)
 
 * game_object -> noun, action, preposition
-        + has: name, desc, brief_desc
-        + str(game_object) is its name
+    + has: name, desc, brief_desc
+    + str(game_object) is its name
 
 * noun -> room, item, game, direction
 
