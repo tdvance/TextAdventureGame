@@ -1,6 +1,6 @@
 # TextAdventureGame
 
-An experimental framework for text adventure games using Unity 5
+An experimental framework for text adventure games using Python (ultimately: Unity 5)
 
 * game_object -> noun, action, preposition
         + has: name, desc, brief_desc
