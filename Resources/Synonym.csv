@@ -1,0 +1,11 @@
+Name,RealName
+n,north
+s,south
+e,east
+w,west
+nw,northwest
+ne,northeast
+sw,southwest
+se,southeast
+u,up
+d,down

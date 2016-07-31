@@ -1,0 +1,11 @@
+Name,Opposite,text1,text2,text3,text4,text5,text6
+north,south,"to the north","northward"
+south,north,"to the south","southward"
+east,west,"to the east","eastward"
+west,east,"to the west","westward"
+up,down,"upward","above"
+down,up,"downward","below"
+northwest,southeast,"to the northwest"
+southeast,northwest,"to the southeast"
+northeast,southwest,"to the northeast"
+southwest,northeast,"to the southwest"

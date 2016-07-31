@@ -1,0 +1,6 @@
+Name,Description,Short_Description,direction1,room1,direction2,room2,direction3,room3,direction4,room4,direction5,room5,direction6,room6
+RooftopStart,"you are on top of a roof","a rooftop.",down,StreetTallBuilding
+StreetTallBuilding,"you are on a street below a tall building","a street",south,StreetTheater,west,Apartment
+StreetTheater,"you are on a street running by a decrepit theater","a street",north,StreetTallBuilding,west,TheaterFront
+Apartment,"you are in front of an apartment building","an apartment building.",east,StreetTallBuilding
+TheaterFront,"you are in front of a theater","a theater",east,StreetTheater

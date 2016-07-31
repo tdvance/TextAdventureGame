@@ -1,65 +1,98 @@
-from itertools import chain
+import csv
+from collections import namedtuple
+import random
+import sys
 
-from action import Action
-from actor import Actor
-from dictionary import Dictionary
-from direction import Direction
-from enemy import Enemy
-from game_object import GameObject
-from item import Item
-from noun import Noun
-from player import Player
-from preposition import Preposition
-from room import Room
+from resources import Resources
 
+class Game:
+    def __init__(self):
+        self._starting_room = None
+        self._room = None
+        self._time = 0.0
+        self._resources = Resources()
+        self.load_game()
+        self._debug = False
 
-class Game(Noun):
-    """
-    The main game, managing the game loop, containers for various game elements, etc.
-    """
+    def load_game(self):
+        self._starting_room = self._resources.load_resource('Room')
+        self._resources.load_resource('Direction')
+        self._resources.load_resource('Synonym')
 
-    def __init__(self, game='Game', player_name="Player", desc=None, brief_desc=None):
-        Noun.__init__(self, self.__class__, game, desc, brief_desc)
-        self._dictionary = Dictionary()
-        self._player = Player(str(player_name))
-        self._registry = GameObject._registry
+    def start_game(self):
+        self._room = self._starting_room
+        self._time = 0.0
+        while self.tick():
+            pass
+        self.output_sentence("Game Over")
 
-    @property
-    def player(self):
-        return self._player
+    def tick(self):
+        self.show_room()
+        l = self.get_input()
+        result = self.process_input(l)
+        self._time += 1
+        return result
 
-    @property
-    def dictionary(self):
-        return self._dictionary
+    def output_sentence(self, fmt, *args):
+        x = fmt % args
+        x = x[0].upper() + x[1:] + '.'
+        print(x)
 
-    def __getitem__(self, item):
-        return self._registry.find(item, {Item, Actor, Player, Enemy})
+    def debug(self, fmt, *args):
+        if self._debug:
+            print("Debug: ", end='')
+            print(fmt % args)
 
-    def __contains__(self, item):
-        return self[item] is not None
+    def show_room(self, brief=False):
+        self.debug("%s", self._room)
+        r = self._resources.get(self._room, 'Room')
+        self.output_sentence("%s", r.Description)
+        if brief:
+            return
+        #TODO fix
+        for d in r.obj:
+            direction = self.resources.get(d, 'Direction')
+            w = r.obj[d]
+            where = self.resources.find(w, 'Room')
+            self.debug("d=%s:direction=%s, w=%s:where=%s", d, direction, w, where)
+            self.output_sentence("%s is %s", random.choice(direction.obj.texts), where.short_description)
 
-    def __len__(self):
-        return (self._registry.count(Item) + self._registry.count(Actor)
-                + self._registry.count(Player) + self._registry.count(Enemy))
+    def get_input(self):
+        s = input('> ')
+        return s.split()
 
-    def __iter__(self):
-        return chain(self._registry.iter(Item), self._registry.iter(Actor),
-                     self._registry.iter(Player), self._registry.iter(Enemy))
+    def process_input(self, l):
+        # self.output_sentence("cmd = %r", l)
+        if not l:
+            return
+        cmd = l[0]
+        if cmd == 'quit':
+            return False
+        if cmd == 'go':
+            return self.go(*l[1:])
+        if len(l) == 1 and self.resources.find(cmd, 'Direction'):
+            return self.go(cmd)
+        self.output_sentence("I don't understand")
+        return "I don\'t understand"
 
-    def get_room(self, room):
-        return self._registry.get(room, Room)
-
-    def has_room(self, room):
-        return self._registry.get(room, Room) is not None
-
-    def num_rooms(self):
-        return self._registry.count(Room)
-
-    def iter_rooms(self):
-        return self._registry.iter(Room)
+    def go(self, *args):
+        if not args:
+            self.output_sentence("Go where?")
+            return 'redo'
+        where = self.resources.find(args[0], 'Direction')
+        if where is None:
+            self.output_sentence("I don't understand %r", args[0])
+            return 'redo'
+        r = self.resources.find(self._room, 'Room')
+        if where.name not in r.obj:
+            self.output_sentence("There is nothing to see %s", random.choice(where.obj.texts))
+            return 'redo'
+        next_room = r.obj[where.name]
+        self._room = next_room
+        return 'ok'
 
 
 if __name__ == '__main__':
-    print("Running main.")
-    game = Game(game='A Game', player_name='A Player')
-    print("Game(%s) = %r " % (game, game))
+    game = Game()
+    # game._registry.dump()
+    game.start_game()
