@@ -3,6 +3,7 @@ import os
 
 from collections import namedtuple
 
+
 class Resources:
     def __init__(self, resources_directory='Resources'):
         self._resources_directory = resources_directory
@@ -11,16 +12,16 @@ class Resources:
 
     def normalize(self, name, category):
         name = name.lower()
-        category = category.lower
+        category = category.lower()
         while name in self._synonyms and (name, category) not in self._master:
-            name = self._synonyms[name]
+            name = self._synonyms[name].lower()
         return name, category
 
     def add(self, name, category, value):
         self._master[self.normalize(name, category)] = value
 
     def add_synonym(self, name, real_name):
-        self._synonyms[name.lower()] = real_name
+        self._synonyms[name.lower()] = real_name.lower()
 
     def get(self, name, category):
         return self._master[self.normalize(name, category)]
@@ -43,7 +44,7 @@ class Resources:
                         row.append('')
                     value = Resource(*row)
                     name = row[name_field]
-                    if category == 'Synonyms':
+                    if category == 'Synonym':
                         self.add_synonym(name, row[1])
                     else:
                         self.add(name, category, value)

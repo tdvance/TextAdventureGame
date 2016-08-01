@@ -1,0 +1,9 @@
+Name,Description
+Go,"go <direction>: go in the specified direction.  Also, g <direction> or just <direction>"
+Get,"get <item>: pick up the specified item.  Also, take <item>  or t <item>"
+Drop,"drop <item>: put down the specified item.  Also, dr <item>"
+Quit,"quit: quit the game.  Also Q"
+Save,"save <name>: save the game under the specified name"
+Load,"load <name>: load the previously-saved game having the specified name"
+Examine,"examine <entity>: describe the entity.  Also ex <entity> or look <entity> or l <entity> If no entity specified, describe the current room"
+Help,"help <entity>: show a help message for a command or other entity.  If command is missing, show general help"
