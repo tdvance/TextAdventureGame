@@ -20,3 +20,6 @@ L,Examine
 Describe,Examine
 H,Help
 ?,Help
+Gun,Pistol
+Rocket,RPG
+Launcher,RPG

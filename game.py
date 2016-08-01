@@ -25,13 +25,15 @@ class Game:
         self._test_input_queue = deque()
         for s in queue:
             self._test_input_queue.appendleft(str(s))  # for testing
-        self._transcript = []
+        self._in = []
+        self._out = []
         self._output_queue = ""
 
     def load_game_resources(self):
         self._starting_room = self._resources.load_resource('Room')
         self._resources.load_resource('Direction')
         self._resources.load_resource('Command')
+        self._resources.load_resource('Item')
         self._resources.load_resource('Synonym')
 
     def start_game(self):
@@ -40,6 +42,7 @@ class Game:
         self._time = 0.0
         self.run_main_loop()
         self.output_sentence("Game Over")
+        self.flush()
 
     def run_main_loop(self):
         while self.REPL_tick():
@@ -54,7 +57,6 @@ class Game:
 
     def output(self, fmt, *args):
         x = fmt % args
-        self._transcript.append(x)
         self._output_queue += x
 
     def output_sentence(self, fmt, *args):
@@ -68,7 +70,9 @@ class Game:
         self.output('%s', x)
 
     def flush(self):
-        print('\n' + '\n'.join(textwrap.wrap(self._output_queue)))
+        print('\n' + '\n'.join(textwrap.wrap(self._output_queue, break_long_words=False)))
+        if self._output_queue:
+            self._out.append(self._output_queue)
         self._output_queue = ''
 
     def debug(self, fmt, *args):
@@ -95,6 +99,11 @@ class Game:
                 l += 1
             self.debug("d=%s:direction=%s, w=%s:where=%s", d, direction, w, where)
             self.output_sentence("%s is %s", random.choice(direction[2:l]), where.ShortDescription)
+        for i in self._resources.iter('Item'):
+            item = self._resources.get(i, 'Item')
+            if item.Location == self._room:
+                self.output_sentence("%s", item.Description)
+
         self.flush()
 
     def get_input(self):
@@ -104,7 +113,10 @@ class Game:
             print('> %s' % s)
         else:
             s = input('> ')
-        self._transcript.append('> %s' % s)
+        while len(self._in) < len(self._out) - 1:
+            self._in.append('')
+
+        self._in.append(s)
         return s.lower().split()
 
     def process_input(self, l):
@@ -126,6 +138,10 @@ class Game:
             return False
         if cmd == 'Go':
             return self.go(*l[1:])
+        if cmd == 'Get':
+            return self.get(*l[1:])
+        if cmd == 'Drop':
+            return self.drop(*l[1:])
 
         self.output_sentence("I don't understand")
         self.flush()
@@ -163,6 +179,48 @@ class Game:
         self.flush()
         return 'ok'
 
+    def drop(self, *args):
+        if not args:
+            self.output_sentence("Drop what?")
+            self.flush()
+            return 'redo'
+
+        if not self._resources.has(args[0], 'Item'):
+            self.output_sentence("I don't understand %r", args[0])
+            self.flush()
+            return 'redo'
+        what = self._resources.get(args[0], 'Item')
+        if what.Location != 'Player':
+            self.output_sentence("You are not carrying any %s", args[0])
+            self.flush()
+            return 'redo'
+        what = what._replace(Location=self._room)
+        self._resources.add(what.Name, 'Item', what)
+        self.output_sentence('%s', what.Description)
+        self.flush()
+        return 'ok'
+
+    def get(self, *args):
+        if not args:
+            self.output_sentence("Get what?")
+            self.flush()
+            return 'redo'
+
+        if not self._resources.has(args[0], 'Item'):
+            self.output_sentence("I don't understand %r", args[0])
+            self.flush()
+            return 'redo'
+        what = self._resources.get(args[0], 'Item')
+        if what.Location != self._room:
+            self.output_sentence("I don't see a %s here", args[0])
+            self.flush()
+            return 'redo'
+        what = what._replace(Location='Player')
+        self._resources.add(what.Name, 'Item', what)
+        self.output_sentence('%s', what.PlayerDescription)
+        self.flush()
+        return 'ok'
+
     def go(self, *args):
         if not args:
             self.output_sentence("Go where?")
@@ -186,23 +244,57 @@ class Game:
         self.flush()
         return 'redo'
 
+    @property
+    def out(self):
+        return self._out
+
+    @property
+    def history(self):
+        return self._in
+
 
 if __name__ == '__main__':
-    game = Game('d', 'w', 'e', 's', 'go w', 'e', 'n', 'south', 'North', 'nw', 'h nw', 'q')
+    test_input = ['get pistol', 'd', 'w', 'e', 's', 'go w', 'e', 'n', 'south', 'North', 'nw', 'h nw', 'drop pistol',
+                  'q']
+    game = Game(*test_input)
     game.start_game()
-    t = game._transcript
+    t = game.out
     assert 'top of a roof' in t[0]
-    assert 'street below a tall building' in t[3]
-    assert 'apartment building' in t[7]
-    assert t[10] == t[3]
-    assert 'decrepit theater' in t[14]
-    assert 'front of a theater' in t[18]
-    assert t[21] == t[14]
-    assert t[25] == t[3]
-    assert t[29] == t[14]
-    assert t[33] == t[3]
-    assert 'nothing to see' in t[37]
-    assert 'Go Northwest' in t[42]
-    assert t[43] == t[3]
-    assert 'Game Over' in t[48]
+    assert 'pistol in t[0]'
+    t.pop(0)
+    assert 'packing heat' in t[0]
+    t.pop(0)
+    assert 'pistol' not in t[0]
+    t.pop(0)
+    assert 'street below a tall building' in t[0]
+    t.pop(0)
+    assert 'apartment building' in t[0]
+    t.pop(0)
+    assert 'street below a tall building' in t[0]
+    t.pop(0)
+    assert 'decrepit theater' in t[0]
+    t.pop(0)
+    assert 'front of a theater' in t[0]
+    t.pop(0)
+    assert 'decrepit theater' in t[0]
+    t.pop(0)
+    assert 'street below a tall building' in t[0]
+    t.pop(0)
+    assert 'decrepit theater' in t[0]
+    t.pop(0)
+    assert 'street below a tall building' in t[0]
+    t.pop(0)
+    assert 'nothing to see' in t[0]
+    t.pop(0)
+    t.pop(0)
+    assert 'Go Northwest' in t[0]
+    t.pop(0)
+    t.pop(0)
+    assert 'pistol' in t[0]
+    t.pop(0)
+    assert 'street below a tall building' in t[0]
+    t.pop(0)
+    t.pop(0)
+    assert 'Game Over' in t[0]
+    assert test_input == [x for x in game.history if x]
     print("Tests passed.")

@@ -23,6 +23,11 @@ class Resources:
     def add_synonym(self, name, real_name):
         self._synonyms[name.lower()] = real_name.lower()
 
+    def iter(self, category):
+        for (name, cat) in self._master:
+            if cat == category.lower():
+                yield name
+
     def get(self, name, category):
         return self._master[self.normalize(name, category)]
 

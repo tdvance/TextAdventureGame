@@ -1,0 +1,4 @@
+Name,Description,PlayerDescription,Location
+Pistol,"Somebody threw away a perfectly good Desert Eagle .357 Magnum pistol","You are packing heat",RooftopStart
+PistolAmmo,"Somebody lost a pistol ammo clip","You have a pistol ammo clip",Apartment
+RPG,"There is a massive RPG laungher lying here","You are packing serious RPG heat",TheaterFront
