@@ -1,72 +1,53 @@
-# TextAdventureGame
-
-An experimental framework for text adventure games using Python (ultimately: Unity 5)
+#Text Adventure Game Framework
 
 
-##"Parts of speech" or Categories
+## World
+A world is like a graph.  Instead of nodes, we have rooms.  Instead of 
+edges, we have connections.  From each room are connections to other 
+rooms, and each connection is indexed by a direction.
+ 
+## Direction
+A direction is a text string, and can be an alias to another direction. 
+In addition,  Directions can have text representations like 'to the 
+west is'.
+ 
+## Room
+ A room is a place in the world.  There are connections between rooms
+ and other rooms in the world, indexed by directions.  A room has a 
+ description appropriate for when in the room, and a short description
+ appropriate for viewing a connection to the room.  The room also has
+ a long description for when it is examined.
+ 
+## Connection
+A connection is a direction and a source and target room.  It says that 
+the target room is connected to the source room and in the given 
+direction from the source room.
 
-* Room: location in game
-* Direction: (Room, Direction) points to another Room
-* Command: an action verb, like go, quit, etc.
-* Item: something that can be picked up, moved, etc.
-* Actor: something autonomous, e.g. an enemy.
-* Structure: something like a wall, etc. that can be changed (blown up, etc.)
+## Item
+An item can be in a room or on the player (if gettable).  An item has
+a room description appropriate for when it is visible in a room, a 
+player description appropriate for when the player has it, a take 
+description shown when it is picked up, a drop description shown when
+it is dropped, and a long description for when it is examined.  It
+has attributes like visible, gettable, etc.
 
-##properties of game entities
-* Each entity in the game is uniquely specified by its name and its category
-* A name, which is a string, is by convention, is a single CamelCase word.
-    + for example, a Room might be named StreetNextToPawnShop
-* However, when a name must be typed, such as a direction, command, or item, 
-it is case insensitive and if unambiguous, can be abbreviated
-* Any name can be assigned a Synonym.  E.g.  the Name-Category pari (W, Direction) 
-could be a Synonym for (West, Direction)
+## Action
+An action is something that changes the state of the game.  For example
+if a player is in a room, the player can go in a direction to go to a
+connecting room, or get an item or drop an item, etc.  Most actions
+will correspond to methods.  For example, an action invoked by the
+player will be a method of the player.  An action invoked by the player
+will have a text string and can be an alias to another action.  It would
+have a long description displayed upon running 'help'.
 
-##List of Command entities (can be extended at will) 
-* Go _Direction_
-    + Synonym: G _Direction_
-    + Can also just type _Direction_ with no verb
-* Get _Item_
-    + Synonym: Take _Item_
-    + Synonym: T _Item_
-* Drop _Item_
-    + Synonym: Dr _Item_
-* Quit
-    + Synonym: Q
-* Save _Name_
-    + Saves the game under the specified name
-* Load _Name_
-    + Loads the previously-saved game having the specified name    
-* Examine _optional argument: Item or Actor or Structure or Room_
-    + Synonym: Ex
-    + Synonym: Look
-    + Synonym: L
-    + If no argument given, assume current room 
-    + If room argument given, must be a room already encountered or current room
-    + If Item or Actor or Structure given, the entity must exist in the current room
+## Player
+The first-person player of the game.  The player can be in a room and
+can perform an action.
 
-## List of Direction entities (can be extended at will)
-* North
-    + Synonym: N
-* South
-    + Synonym: S
-* East
-    + Synonym: E
-* West
-    + Synonym: W
-* NorthWest
-    + Synonym: NW
-* NorthEast
-    + Synonym: ME
-* SouthWest
-    + Synonym: SW
-* SouthEast
-    + Synonym: SE
-* Up
-    + Synonym: U
-* Down
-    + Synonym: D
+## Actor
+An actor is an item, but with the ability to perform actions. 
+Typically, an actor will not be gettable.
 
-##Resources
-* Game entities in a given category are stored in a CSV file of the name Resources/_Category_.csv 
 
-    
+
+   

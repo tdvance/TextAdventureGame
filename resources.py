@@ -1,58 +1,87 @@
-import csv
 import os
 
-from collections import namedtuple
+from action import Action
+from direction import Direction
+from error import Error
+from room import Room
 
 
-class Resources:
-    def __init__(self, resources_directory='Resources'):
-        self._resources_directory = resources_directory
-        self._master = dict()
-        self._synonyms = dict()
+def load(resource_name, resource_dir='Resources'):
+    with open(os.path.join(resource_dir, resource_name + '.res')) as f:
+        rows = []
+        for line in f:
+            l = line
+            if '#' in l:
+                i = l.index('#')
+                l = l[0:i]
+            l = l.strip()
+            if l:
+                row = l.split(',')
+                for i in range(len(row)):
+                    row[i] = row[i].strip()
+                rows.append(row)
+    return rows
 
-    def normalize(self, name, category):
-        name = name.lower()
-        category = category.lower()
-        while name in self._synonyms and (name, category) not in self._master:
-            name = self._synonyms[name].lower()
-        return name, category
 
-    def add(self, name, category, value):
-        self._master[self.normalize(name, category)] = value
+def load_directions():
+    d = dict()
+    rows = load('Directions')
+    for row in rows:
+        name = row[0]
+        representations = row[1:]
+        d[str(name).lower()] = Direction(name, *representations)
+    return d
 
-    def add_synonym(self, name, real_name):
-        self._synonyms[name.lower()] = real_name.lower()
 
-    def iter(self, category):
-        for (name, cat) in self._master:
-            if cat == category.lower():
-                yield name
+def load_actions(**objects):
+    d = dict()
+    rows = load('Actions')
+    for row in rows:
+        name = row[0]
+        obj = row[1]
+        method = row[2]
+        help = row[3]
+        obj = objects[obj.lower()]
+        method = getattr(obj, method)
+        d[str(name).lower()] = Action(name, obj, method, help)
+    return d
 
-    def get(self, name, category):
-        return self._master[self.normalize(name, category)]
 
-    def has(self, name, category):
-        return self.normalize(name, category) in self._master
+def load_rooms(world, directions):
+    rows = load('Rooms')
+    connections = dict()
+    for row in rows:
+        name = row[0]
+        desc = row[1]
+        sdesc = row[2]
+        help = row[3]
+        r = Room(name, desc, sdesc, help)
+        world[name] = r
+        if not world.starting_room:
+            world.set_starting_room(r)
+        connections[name.lower()] = row[4:]
+    for name in connections:
+        for i in range(0, len(connections[name]), 2):
+            d = directions[connections[name][i].lower()]
+            t = world[connections[name][i + 1]]
+            world[name].connect(d, t)
 
-    def load_resource(self, category, name_field=0):
-        first_name = None
-        filename = os.path.join(self._resources_directory, "%s.csv" % category)
-        with open(filename) as f:
-            f_csv = csv.reader(f)
-            headers = next(f_csv)
-            Resource = namedtuple(category, headers)
-            for row in f_csv:
-                if row and not row[0].strip().startswith('#'):
-                    row = [x for x in row]
-                    assert len(row) <= len(headers)
-                    while len(row) < len(headers):
-                        row.append('')
-                    value = Resource(*row)
-                    name = row[name_field]
-                    if category == 'Synonym':
-                        self.add_synonym(name, row[1])
-                    else:
-                        self.add(name, category, value)
-                    if not first_name:
-                        first_name = name  # sometimes, the first resource is significant
-        return first_name
+
+def load_errors():
+    d = dict()
+    rows = load('Errors')
+    for row in rows:
+        name = row[0]
+        texts = row[1:]
+        d[name.lower()] = Error(name, *texts)
+    return d
+
+
+def load_aliases():
+    d = dict()
+    rows = load('Aliases')
+    for row in rows:
+        name = row[0]
+        alias_of = row[1]
+        d[name.lower()] = alias_of.lower()
+    return d
