@@ -15,8 +15,11 @@ class Output:
                                              break_long_words=False)
 
     def print_sentence(self, fmt, *args):
+        print(self.get_sentence(fmt, *args))
+
+    def get_sentence(self, fmt, *args):
         t = fmt % args
         t = t.strip()
         t = t[0].upper() + t[1:]
-        t = '\n' + '\n'.join(self._wrapper.wrap(t))
-        print(t)
+        t = '\n' + '\n'.join(self._wrapper.wrap(t)) + '.  '
+        return t

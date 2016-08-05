@@ -5,17 +5,18 @@ class Item:
     def __init__(self, name, desc='There is an item in the room', p_desc='You have an item',
                  t_desc='You picked up the item',
                  d_desc='You dropped the item',
-                 help='This is a placeholder item that should not actually exist in the game', gettable=True,
+                 help_text='This is a placeholder item that should not actually exist in the game', gettable=True,
                  visible=True, room=None, on_player=False):
         self._name = str(name)
         self._desc = str(desc)
         self._p_desc = str(p_desc)
         self._t_desc = str(t_desc)
         self._d_desc = str(d_desc)
-        self._help = str(help)
+        self._help = str(help_text)
         self._gettable = bool(gettable)
         self._visible = bool(visible)
-        assert isinstance(room, Room)
+        if room is not None:
+            assert isinstance(room, Room)
         self._room = room
         self._on_player = bool(on_player)
 

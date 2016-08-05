@@ -1,10 +1,10 @@
 class Action:
-    def __init__(self, name, obj, method, help):
+    def __init__(self, name, obj, method, help_text):
         assert hasattr(method, '__call__')
         self._name = str(name)
         self._obj = obj
         self._method = method
-        self._help = str(help)
+        self._help = str(help_text)
 
     @property
     def name(self):
