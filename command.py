@@ -1,4 +1,4 @@
-class Action:
+class Command:
     def __init__(self, name, obj, method, help_text):
         assert hasattr(method, '__call__')
         self._name = str(name)

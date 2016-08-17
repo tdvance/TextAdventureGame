@@ -1,6 +1,6 @@
 import os
 
-from action import Action
+from command import Command
 from direction import Direction
 from error import Error
 from room import Room
@@ -33,17 +33,22 @@ def load_directions():
     return d
 
 
-def load_actions(**objects):
+def load_commands(game):
     d = dict()
-    rows = load('Actions')
+    rows = load('Commands')
     for row in rows:
         name = row[0]
-        obj = row[1]
-        method = row[2]
-        help = row[3]
-        obj = objects[obj.lower()]
+        obj = row[1].lower()
+        method = row[2].lower()
+        help_text = row[3]
+        if obj == 'game':
+            obj = game
+        elif obj == 'player':
+            obj = game.player
+        elif obj == 'world':
+            obj = game.world
         method = getattr(obj, method)
-        d[str(name).lower()] = Action(name, obj, method, help)
+        d[str(name).lower()] = Command(name, obj, method, help_text)
     return d
 
 

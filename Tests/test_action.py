@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from action import Action
+from command import Command
 from output import Output
 
 
@@ -10,7 +10,7 @@ class TestAction(TestCase):
         obj = Output.getinstance()
         method = obj.print_sentence
         help_text = 'The print_sentence method of the Output singleton'
-        instance = Action(name, obj, method, help_text)
+        instance = Command(name, obj, method, help_text)
         exp_result = name
         result = instance.name
         self.assertEqual(exp_result, result)
@@ -31,7 +31,7 @@ class TestAction(TestCase):
         obj = Output.getinstance()
         method = obj.print_sentence
         help_text = 'The print_sentence method of the Output singleton'
-        instance = Action(name, obj, method, help_text)
+        instance = Command(name, obj, method, help_text)
         exp_result = name
         result = instance.name
         self.assertEqual(exp_result, result)
@@ -43,7 +43,7 @@ class TestAction(TestCase):
         obj = Output.getinstance()
         method = obj.print_sentence
         help_text = 'The print_sentence method of the Output singleton'
-        instance = Action(name, obj, method, help_text)
+        instance = Command(name, obj, method, help_text)
         exp_result = help_text
         result = instance.help
         self.assertEqual(exp_result, result)
@@ -55,7 +55,7 @@ class TestAction(TestCase):
         obj = Output.getinstance()
         method = obj.get_sentence
         help_text = 'The get_sentence method of the Output singleton'
-        instance = Action(name, obj, method, help_text)
+        instance = Command(name, obj, method, help_text)
         exp_result = '\n   Some format 5.  '
         result = instance('some format %d', 5)
         self.assertEqual(exp_result, result)
@@ -67,7 +67,7 @@ class TestAction(TestCase):
         obj = Output.getinstance()
         method = obj.print_sentence
         help_text = 'The print_sentence method of the Output singleton'
-        instance = Action(name, obj, method, help_text)
+        instance = Command(name, obj, method, help_text)
         exp_result = name
         result = str(instance)
         self.assertEqual(exp_result, result)

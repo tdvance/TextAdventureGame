@@ -34,14 +34,5 @@ class Room:
     def __str__(self):
         return self._name
 
-    def show(self):
-        # TODO use Output method
-        self._output.print_sentence(self.desc)
-
-    def show_connecting(self):
-        for (direction, connection) in self._connections.items():
-            self._output.print_sentence(
-                "%s is %s." % (direction.get_random_representation(), connection.target.short_desc))
-
     def get_connecting(self, direction):
         return self._connections[direction].target
